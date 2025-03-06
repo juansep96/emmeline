@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es" class="light-theme">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/images/favicon-32x32.png" type="image/png" />
+  <!--plugins-->
+  <link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+  <link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
+  <link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
+  <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+  <link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
+  <link href="assets/plugins/input-tags/css/tagsinput.css" rel="stylesheet" />
+  <link href="assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap CSS -->
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="assets/css/bootstrap-extended.css" rel="stylesheet" />
+  <link href="assets/css/style.css" rel="stylesheet" />
+  <link href="assets/css/icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./assets/plugins/notifications/css/lobibox.min.css" />
+
+
+  <!-- loader-->
+	<link href="assets/css/pace.min.css" rel="stylesheet" />
+
+
+  <!--Theme Styles-->
+  <link href="assets/css/light-theme.css" rel="stylesheet" />
+  <link href="assets/css/header-colors.css" rel="stylesheet" />
+
+  <script src="./assets/js/jquery-3.6.0.js"  crossorigin="anonymous"></script>
+
+  <style>
+    .input-group{
+      margin-top:20px !important
+    }
+    th{
+        text-align: center;
+        font-weight: bold;
+    }
+  </style>
+  
+  <title>Listado de Comisiones - Emmeline Nails</title>
+
+  <script>
+    $.post("./php/ObtenerSesion.php")
+    .then((res)=>{
+      if(res=="NO"){
+        window.location.href = "//intranet.emmeline.com.ar/index.html";
+      }
+    })
+  </script>
+
+</head>
+
+<body onload="ObtenerSucursalesSelect();">
+  <!--start wrapper-->
+  <div class="wrapper">
+    <div id="menu"></div>
+      <script>
+          $.get("menu.html", function(data){
+              $("#menu").html(data);
+          });
+      </script>
+
+       <!--start content-->
+       <main class="page-content">
+				<!--breadcrumb-->
+				<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+					<div class="breadcrumb-title pe-3">Contable</div>
+					<div class="ps-3">
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0 p-0">
+								<li class="breadcrumb-item active" aria-current="page">Comisiones por Profesional</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+				<!--end breadcrumb-->
+				<div class="row">
+					<div class="col-xl-12 col-xs-12 mx-auto">
+						<div class="card mt-1">
+							<div class="card-body" style="margin-left:30px !important">
+                                <div class="row mb-4">
+                                    <div class="input-group p-2">
+                                        <span class="input-group-text">Desde</span><input type="date" onchange="CargarComisiones();" id="desde" class="form-control">
+                                        <span class="input-group-text">Hasta</span><input type="date" onchange="CargarComisiones();" id="hasta" class="form-control">
+                                        <span class="input-group-text">Sucursal</span>
+                                        <select id="idSucursal" onchange="CargarComisiones();" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="comisiones" class="table table-striped table-bordered ">
+                                        <thead>
+                                        <tr>
+                                            <th>PROFESIONAL</th>
+                                            <th>CANTIDAD DE SERVICIOS + SEÑAS</th>
+                                            <th>TOTAL</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+  					    </div>
+  				    </div>
+                </div>
+				<!--end row-->
+			</main>
+       <!--end page main-->
+
+    <div class="modal fade" id="modalVerVentas" tabindex="-1" aria-hidden="true">
+      <div class="modal-xl modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Ver Ventas de la Profesional</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CerrarVerVentas();"></button>
+          </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="ventas" class="table table-striped table-bordered ">
+                        <thead>
+                        <tr>
+                            <th># Venta</th>
+                            <th>FECHA</th>
+                            <th>HORA</th>
+                            <th>TOTAL</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalVerVenta" tabindex="-1" aria-hidden="true">
+    <div class="modal-xl modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="tituloVerVenta"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CerrarVerVenta();"></button>
+        </div>
+          <div class="modal-body">
+            <div class="input-group p-2">
+              <h6>PRODUCTOS EN LA VENTA</h6>
+              <div class="table-responsive">
+                <table class="table centered" id="tabla-items" >
+                  <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Descuento</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+             
+            </div>
+
+            <div class="input-group p-2" style="margin-top:10px !important">
+              <h6>FORMAS DE PAGO</h6>
+            </div>
+            <div class="input-group p-2 row">
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Total</span><input readonly type="text" id="total" class="form-control">
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Efectivo</span><input readonly type="text" id="efectivo" class="form-control">
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Mercado Pago</span><input readonly type="text" id="mp" class="form-control">     
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Posnet</span><input readonly type="text" id="posnet" class="form-control">     
+              </div>
+            </div>
+
+            <div hidden class="input-group p-2 facturacion" style="margin-top:30px !important">
+              <h6>DATOS DE FACTURACIÓN</h6>
+            </div>
+            <div hidden class="input-group facturacion row">
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Fecha</span><input readonly type="date" id="fechaFacturacion" class="form-control">
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">N° Factura</span><input readonly type="text" id="nro" class="form-control">
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">CAE</span><input readonly type="text" id="cae" class="form-control">
+              </div>
+              <div class="col-6 col-xs-6 col-md-6 col-lg-3 col-xl-3">
+                <span class="input-group-text">Vto.</span><input readonly type="date" id="vto" class="form-control">     
+              </div>
+            </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!--end wrapper-->
+
+
+  <!-- Bootstrap bundle JS -->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <!--plugins-->
+  <script src="./assets/js/pace.min.js"></script>
+  <script src="./assets/plugins/select2/js/select2.min.js"></script>
+  <script src="./assets/plugins/input-tags/js/tagsinput.js"></script>
+  <script src="./assets/js/form-select2.js"></script>
+  <script src="./assets/plugins/notifications/js/notifications.js"></script>
+  <script src="./assets/plugins/notifications/js/lobibox.js"></script>
+  <script src="assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+  <script src="assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+  <script src="//momentjs.com/downloads/moment.min.js"></script> <!--Moments Library-->
+
+  <!--app-->
+  <script src="./js/comisiones.js"></script>
+  <script src="assets/js/app.js"></script>
+
+</body>
+
+</html>
